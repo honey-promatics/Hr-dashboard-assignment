@@ -1,6 +1,5 @@
-"use client"
-
 import { createContext, useState, useContext, useEffect } from "react"
+import axios from 'axios'
 
 const AuthContext = createContext()
 
@@ -30,7 +29,6 @@ export const AuthProvider = ({ children }) => {
                 }
             } catch (error) {
                 console.error("Error checking auth status:", error)
-                // Clear any invalid data
                 localStorage.removeItem("user")
                 localStorage.removeItem("token")
             } finally {
@@ -46,7 +44,14 @@ export const AuthProvider = ({ children }) => {
         setError(null)
 
         try {
-            await new Promise((resolve) => setTimeout(resolve, 1000))
+            console.log("userdata : ", userData)
+            const result = await axios.post(`${import.meta.env.VITE_Backend_Url}api/auth/register`, userData, {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            console.log("result : ", result.data)
 
             const newUser = {
                 id: Math.random().toString(36).substr(2, 9),

@@ -17,10 +17,23 @@ const { connectDB } = require("./src/config/mongo");
 
 const app = express();
 
-app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:3000',
-    credentials: true
-}));
+// const corsOptions = {
+//   origin: "*",
+//   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+//   preflightContinue: false,
+//   optionsSuccessStatus: 204,
+//   allowedHeaders: "Content-Type, Authorization",
+// };
+
+const corsOptions = {
+  origin: '*', 
+  credentials: true, 
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -42,7 +55,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/leaves', leaveRoutes);
 
 app.get("/", (req, res) => {
-  return res.send("Welcome to HR Dashboard");
+    return res.send("Welcome to HR Dashboard");
 });
 
 app.use((req, res, next) => {
