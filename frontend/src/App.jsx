@@ -7,15 +7,16 @@ import Employees from './pages/Employees';
 import Attendance from './pages/Attendence';
 import Leaves from './pages/Leaves';
 import './App.css';
+import { AuthProvider } from "./context/AuthContext"
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(true);
-  
+
   useEffect(() => {
     // Check if user is logged in
     const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
     setIsAuthenticated(loggedIn);
-    
+
     // Auto logout after 2 hours
     if (loggedIn) {
       const tokenExpiry = localStorage.getItem('tokenExpiry');
@@ -39,13 +40,13 @@ const App = () => {
       }
     }
   }, []);
-  
+
   const handleLogout = () => {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('tokenExpiry');
     setIsAuthenticated(false);
   };
-  
+
   // Protected route component
   const ProtectedRoute = ({ children }) => {
     // if (!isAuthenticated) {
@@ -55,34 +56,36 @@ const App = () => {
   };
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={isAuthenticated ? <Navigate to="/candidates" /> : <Login />} />
-        <Route path="/register" element={isAuthenticated ? <Navigate to="/candidates" /> : <Register />} />
-        <Route path="/candidates" element={
-          <ProtectedRoute>
-            <Candidates />
-          </ProtectedRoute>
-        } />
-        <Route path="/employees" element={
-          <ProtectedRoute>
-            <Employees />
-          </ProtectedRoute>
-        } />
-        <Route path="/attendance" element={
-          <ProtectedRoute>
-            <Attendance />
-          </ProtectedRoute>
-        } />
-        <Route path="/leaves" element={
-          <ProtectedRoute>
-            <Leaves />
-          </ProtectedRoute>
-        } />
-        <Route path="/logout" element={<Navigate to="/login" />} />
-        {/* <Route path="*" element={<Navigate to={isAuthenticated ? "/candidates" : "/login"} />} /> */}
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/login" element={isAuthenticated ? <Navigate to="/candidates" /> : <Login />} />
+          <Route path="/register" element={isAuthenticated ? <Navigate to="/candidates" /> : <Register />} />
+          <Route path="/candidates" element={
+            <ProtectedRoute>
+              <Candidates />
+            </ProtectedRoute>
+          } />
+          <Route path="/employees" element={
+            <ProtectedRoute>
+              <Employees />
+            </ProtectedRoute>
+          } />
+          <Route path="/attendance" element={
+            <ProtectedRoute>
+              <Attendance />
+            </ProtectedRoute>
+          } />
+          <Route path="/leaves" element={
+            <ProtectedRoute>
+              <Leaves />
+            </ProtectedRoute>
+          } />
+          <Route path="/logout" element={<Navigate to="/login" />} />
+          {/* <Route path="*" element={<Navigate to={isAuthenticated ? "/candidates" : "/login"} />} /> */}
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 };
 
