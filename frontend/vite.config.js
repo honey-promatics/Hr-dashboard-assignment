@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://stunning-space-telegram-4jwvqvvrwj45hj977-5000.app.github.dev',
+        target: 'http://localhost:5000',
         changeOrigin: true,
         secure: false,
       },

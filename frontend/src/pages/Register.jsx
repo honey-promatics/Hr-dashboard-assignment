@@ -6,6 +6,7 @@ import * as Yup from "yup"
 import { useAuth } from "../../src/context/AuthContext"
 import dashboardImage from "../assets/UserLogin.png"
 import "../styles/Auth.css"
+import { toast } from "react-toastify"
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false)
@@ -28,11 +29,13 @@ const Register = () => {
         name: values.fullName,
         email: values.email,
         password: values.password,
-        confirmPassword : values.confirmPassword
+        confirmPassword: values.confirmPassword
       })
+      console.log("success : ", success)
 
       if (success) {
-        navigate("/")
+        toast.success("registration successful!")
+        navigate("/candidates")
       }
     } catch (error) {
       setErrors({ submit: error.message || "Registration failed" })
@@ -83,7 +86,7 @@ const Register = () => {
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
             >
-              {({ isSubmitting, errors }) => (
+              {({ isSubmitting, errors, values }) => (
                 <Form>
                   <div className="form-group">
                     <label htmlFor="fullName">

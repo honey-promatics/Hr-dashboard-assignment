@@ -1,17 +1,21 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import '../../styles/Sidebar.css';
+import { useAuth } from '../../context/AuthContext';
+import { toast } from 'react-toastify';
 
 const Sidebar = () => {
   const location = useLocation();
   const path = location.pathname;
+  const { logout } = useAuth()
+  const navigate = useNavigate()
 
   return (
     <div className="sidebar">
       <div className="logo-container">
         <div className="logo">LOGO</div>
       </div>
-      
+
       <div className="search-container">
         <div className="search-input">
           <span className="search-icon">
@@ -69,7 +73,13 @@ const Sidebar = () => {
         </div>
 
         <div className="section-title">Others</div>
-        <div className={`sidebar-item ${path.includes('/logout') ? 'active' : ''}`}>
+        <div className={`sidebar-item ${path.includes('/logout') ? 'active' : ''}`} style={{ cursor: 'pointer' }} onClick={async () => {
+          const success = await logout()
+          if (success) {
+            toast.success("logout successfull")
+            navigate('/login')
+          }
+        }}>
           <span className="sidebar-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
@@ -77,7 +87,7 @@ const Sidebar = () => {
               <line x1="21" y1="12" x2="9" y2="12"></line>
             </svg>
           </span>
-          <Link to="/logout">Logout</Link>
+          Logout
         </div>
       </div>
     </div>

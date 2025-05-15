@@ -121,13 +121,12 @@ exports.updatePassword = async (req, res, next) => {
 
 const sendTokenResponse = (user, statusCode, res) => {
   const token = user.getSignedJwtToken();
+  const hours = parseInt(process.env.JWT_COOKIE_EXPIRE) || 1;
 
   const options = {
-    expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRE * 60 * 60 * 1000
-    ),
+    expires: new Date(Date.now() + hours * 60 * 60 * 1000),
     httpOnly: true,
-    secure: true, 
+    secure: true,
     sameSite: 'None'
   };
 
@@ -139,7 +138,10 @@ const sendTokenResponse = (user, statusCode, res) => {
     .status(statusCode)
     .cookie('token', token, options)
     .json({
+      message : "User created successfully",
       success: true,
-      token
+      token,
+      data: user,
+      expireBy : options.expires
     });
 };

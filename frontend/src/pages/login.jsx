@@ -6,6 +6,7 @@ import * as Yup from "yup"
 import { useAuth } from "../../src/context/AuthContext"
 import dashboardImage from "../assets/UserLogin.png"
 import "../styles/Auth.css"
+import { toast } from "react-toastify"
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
@@ -23,7 +24,8 @@ const Login = () => {
     try {
       const success = await login(values.email, values.password)
       if (success) {
-        navigate("/")
+        toast.success("login successful!")
+        navigate("/candidates")
       }
     } catch (error) {
       setErrors({ submit: error.message || "Login failed" })
@@ -91,7 +93,7 @@ const Login = () => {
                         placeholder="Password"
                         className="form-control"
                       />
-                      <button type="button" className="password-toggle" onClick={() => setShowPassword(!showPassword)}>
+                      <button type="submit" className="password-toggle" onClick={() => setShowPassword(!showPassword)}>
                         {showPassword ? (
                           <svg
                             xmlns="http://www.w3.org/2000/svg"

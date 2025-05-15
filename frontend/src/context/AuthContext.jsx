@@ -1,5 +1,8 @@
 import { createContext, useState, useContext, useEffect } from "react"
 import axios from 'axios'
+import { httpRequest } from "../utils/httpRequest"
+import { toast } from "react-toastify"
+import { useNavigate } from "react-router-dom"
 
 const AuthContext = createContext()
 
@@ -45,31 +48,31 @@ export const AuthProvider = ({ children }) => {
 
         try {
             console.log("userdata : ", userData)
-            const result = await axios.post(`${import.meta.env.VITE_Backend_Url}api/auth/register`, userData, {
-                withCredentials: true,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            })
-            console.log("result : ", result.data)
 
-            const newUser = {
-                id: Math.random().toString(36).substr(2, 9),
-                name: userData.name,
-                email: userData.email,
-                role: "Employee",
-            }
+            const response = await httpRequest(
+                `api/auth/register`,
+                "post",
+                userData,
+                {},
+                false,
+                false
+            );
+            console.log("response : ", response)
 
-            const token = `mock-jwt-token-${Date.now()}`
+            const newUser = response.data
+
+            const token = response.token
 
             localStorage.setItem("user", JSON.stringify(newUser))
             localStorage.setItem("token", token)
+            localStorage.setItem("expireBy", response.expireBy)
 
             setUser(newUser)
             setIsAuthenticated(true)
 
             setLoading(false)
-            return true
+
+            return response.success === true ? true : false
         } catch (error) {
             console.error("Registration error:", error)
             setError(error.message || "Registration failed")
@@ -87,25 +90,32 @@ export const AuthProvider = ({ children }) => {
                 throw new Error("Email and password are required")
             }
 
-            await new Promise((resolve) => setTimeout(resolve, 1000))
+            const response = await httpRequest(
+                `api/auth/login`,
+                "post",
+                {
+                    email,
+                    password
+                },
+                {},
+                false,
+                false
+            );
+            console.log("response : ", response)
 
-            const loggedInUser = {
-                id: Math.random().toString(36).substr(2, 9),
-                name: email.split("@")[0],
-                email,
-                role: "Employee",
-            }
+            const loggedInUser = response.data
 
-            const token = `mock-jwt-token-${Date.now()}`
+            const token = response.token
 
             localStorage.setItem("user", JSON.stringify(loggedInUser))
             localStorage.setItem("token", token)
+            localStorage.setItem("expireBy", response.expireBy)
 
             setUser(loggedInUser)
             setIsAuthenticated(true)
 
             setLoading(false)
-            return true
+            return response.success === true ? true : false
         } catch (error) {
             console.error("Login error:", error)
             setError(error.message || "Login failed")
@@ -117,6 +127,7 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         localStorage.removeItem("user")
         localStorage.removeItem("token")
+        localStorage.removeItem("expireBy")
 
         setUser(null)
         setIsAuthenticated(false)

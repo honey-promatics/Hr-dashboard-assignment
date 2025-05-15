@@ -16,17 +16,17 @@ const router = express.Router();
 
 router.use(protect);
 
-router.route('/')
+router.route('/leave')
   .get(getLeaves)
   .post(uploadLeaveDocument, createLeave);
 
-router.get('/approved', getApprovedLeaves);
+router.get('/getApprovedLeave', getApprovedLeaves);
 
-router.route('/:id')
+router.route('/leave/:id')
   .get(getLeave)
   .delete(deleteLeave);
 
-router.put('/:id/status', authorize('HR'), updateLeaveStatus);
-router.get('/:id/document', downloadLeaveDocument);
+router.put('/updateleave/:id', authorize('HR'), updateLeaveStatus);
+router.get('/downloadleave/:id', downloadLeaveDocument);
 
 module.exports = router;
