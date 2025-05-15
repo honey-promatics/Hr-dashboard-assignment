@@ -1,50 +1,69 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose")
 
-const CandidateSchema = new mongoose.Schema({
+const EmployeeSchema = new mongoose.Schema({
   fullName: {
     type: String,
-    required: [true, 'Please add a full name'],
-    trim: true
+    required: [true, "Please add a full name"],
+    trim: true,
   },
   email: {
     type: String,
-    required: [true, 'Please add an email'],
+    required: [true, "Please add an email"],
     unique: true,
-    match: [
-      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-      'Please add a valid email'
-    ]
+    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, "Please add a valid email"],
   },
   phone: {
     type: String,
-    required: [true, 'Please add a phone number']
+    required: [true, "Please add a phone number"],
   },
   position: {
     type: String,
-    required: [true, 'Please add a position']
+    required: [true, "Please add a position"],
   },
-  experience: {
+  department: {
     type: String,
-    required: [true, 'Please add experience']
+    required: [true, "Please add a department"],
+  },
+  joinDate: {
+    type: Date,
+    required: [true, "Please add a join date"],
+  },
+  role: {
+    type: String,
+    enum: ["Employee", "Team Lead", "Manager", "HR"],
+    default: "Employee",
+  },
+  profileImage: {
+    type: String,
+    default: "default-profile.jpg",
   },
   resume: {
     type: String,
-    required: [true, 'Please upload a resume']
   },
   status: {
     type: String,
-    enum: ['New', 'Selected', 'Rejected'],
-    default: 'New'
+    enum: ["Active", "Inactive"],
+    default: "Active",
+  },
+  // Reference to user account if exists
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+  // If this employee was created from a candidate
+  candidateId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Candidate",
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+    ref: "User",
+    required: true,
   },
   createdAt: {
     type: Date,
-    default: Date.now
-  }
-});
+    default: Date.now,
+  },
+})
 
-module.exports = mongoose.model('Candidate', CandidateSchema);
+module.exports = mongoose.model("Employee", EmployeeSchema)

@@ -1,12 +1,12 @@
 const express = require("express")
 const {
-  getCandidates,
-  getCandidate,
-  createCandidate,
-  updateCandidate,
-  deleteCandidate,
-  updateCandidateStatus,
-  downloadResume,
+    getCandidates,
+    getCandidate,
+    createCandidate,
+    updateCandidate,
+    deleteCandidate,
+    updateCandidateStatus,
+    downloadResume,
 } = require("../controller/Candidate")
 
 const { protect, authorize } = require("../middleware/Auth")
@@ -16,7 +16,9 @@ const router = express.Router()
 
 router.use(protect)
 
-router.route("/candidates").get(getCandidates).post(uploadResume, createCandidate)
+router.route("/candidates").get(getCandidates)
+
+router.route('/createCandidate').post(authorize("HR"), createCandidate)
 
 router.route("/candidate/:id").get(getCandidate).put(uploadResume, updateCandidate).delete(deleteCandidate)
 

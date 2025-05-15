@@ -66,10 +66,11 @@ const Candidates = () => {
   };
 
   const handleAddCandidate = (newCandidate) => {
-    setCandidates([...candidates, {
-      id: String(candidates.length + 1).padStart(2, '0'),
-      ...newCandidate
-    }]);
+    // setCandidates([...candidates, {
+    //   id: String(candidates.length + 1).padStart(2, '0'),
+    //   ...newCandidate
+    // }]);
+    setCandidates(newCandidate)
     setShowModal(false);
   };
 
@@ -179,9 +180,8 @@ const Candidates = () => {
       </div>
 
       {showModal && (
-        <AddCandidateModal 
-          onClose={() => setShowModal(false)} 
-          onSave={handleAddCandidate}
+        <AddCandidateModal
+          onClose={() => setShowModal(false)}
         />
       )}
     </Layout>

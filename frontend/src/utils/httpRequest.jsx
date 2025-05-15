@@ -24,7 +24,8 @@ export const httpRequest = async (
         };
 
         if (authentication) {
-            const token = Cookies.get("token");
+            const token = localStorage.getItem("token");
+            console.log("http token : ", token)
             if (token) {
                 config.headers["Authorization"] = `Bearer ${token}`;
             }

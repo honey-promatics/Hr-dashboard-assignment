@@ -55,7 +55,6 @@ exports.createCandidate = async (req, res, next) => {
         if (existingCandidate) {
             return next(new ErrorResponse("Candidate with this email already exists", 400))
         }
-
         const candidate = await Candidate.create(req.body)
 
         res.status(201).json({

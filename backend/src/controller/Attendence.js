@@ -1,5 +1,5 @@
-const Attendance = require("../models/Attendance")
-const Employee = require("../models/Employee")
+const Attendance = require("../schema/Attendence")
+const Employee = require("../schema/Employee")
 const ErrorResponse = require("../utils/errorResponse")
 
 exports.getAttendance = async (req, res, next) => {
