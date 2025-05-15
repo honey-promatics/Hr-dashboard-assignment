@@ -1,30 +1,24 @@
-const Leave = require('../models/Leave');
-const Employee = require('../models/Employee');
-const Attendance = require('../models/Attendance');
+const Leave = require('../schema/Leave');
+const Employee = require('../schema/Employee');
+const Attendance = require('../schema/Attendence');
 const ErrorResponse = require('../utils/errorResponse');
 const path = require('path');
 const fs = require('fs');
 
-// @desc    Get all leaves
-// @route   GET /api/leaves
-// @access  Private/HR
 exports.getLeaves = async (req, res, next) => {
   try {
     const { status, employeeId, startDate, endDate } = req.query;
     
     let query = {};
     
-    // Filter by status if provided
     if (status) {
       query.status = status;
     }
     
-    // Filter by employee if provided
     if (employeeId) {
       query.employee = employeeId;
     }
     
-    // Filter by date range if provided
     if (startDate && endDate) {
       query.date = {
         $gte: new Date(startDate),
@@ -53,9 +47,6 @@ exports.getLeaves = async (req, res, next) => {
   }
 };
 
-// @desc    Get approved leaves
-// @route   GET /api/leaves/approved
-// @access  Private/HR
 exports.getApprovedLeaves = async (req, res, next) => {
   try {
     const leaves = await Leave.find({ status: 'Approved' })
@@ -75,9 +66,6 @@ exports.getApprovedLeaves = async (req, res, next) => {
   }
 };
 
-// @desc    Get single leave
-// @route   GET /api/leaves/:id
-// @access  Private/HR
 exports.getLeave = async (req, res, next) => {
   try {
     const leave = await Leave.findById(req.params.id)
@@ -99,20 +87,16 @@ exports.getLeave = async (req, res, next) => {
   }
 };
 
-// @desc    Create new leave
-// @route   POST /api/leaves
-// @access  Private/HR
+
 exports.createLeave = async (req, res, next) => {
   try {
     req.body.createdBy = req.user.id;
     
-    // Check if employee exists
     const employee = await Employee.findById(req.body.employee);
     if (!employee) {
       return next(new ErrorResponse('Employee not found', 404));
     }
     
-    // Check if employee is present (has attendance record)
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
@@ -140,14 +124,10 @@ exports.createLeave = async (req, res, next) => {
   }
 };
 
-// @desc    Update leave status
-// @route   PUT /api/leaves/:id/status
-// @access  Private/HR
 exports.updateLeaveStatus = async (req, res, next) => {
   try {
     const { status } = req.body;
     
-    // Validate status
     if (!['Pending', 'Approved', 'Rejected'].includes(status)) {
       return next(new ErrorResponse('Invalid status value', 400));
     }
@@ -174,9 +154,6 @@ exports.updateLeaveStatus = async (req, res, next) => {
   }
 };
 
-// @desc    Delete leave
-// @route   DELETE /api/leaves/:id
-// @access  Private/HR
 exports.deleteLeave = async (req, res, next) => {
   try {
     const leave = await Leave.findById(req.params.id);
@@ -185,12 +162,10 @@ exports.deleteLeave = async (req, res, next) => {
       return next(new ErrorResponse(`Leave not found with id of ${req.params.id}`, 404));
     }
     
-    // Check if user is leave creator or HR
     if (leave.createdBy.toString() !== req.user.id && req.user.role !== 'HR') {
       return next(new ErrorResponse('Not authorized to delete this leave', 401));
     }
     
-    // Delete document file if exists
     if (leave.document) {
       const filePath = path.join(__dirname, '../uploads/documents', leave.document);
       if (fs.existsSync(filePath)) {
@@ -209,9 +184,7 @@ exports.deleteLeave = async (req, res, next) => {
   }
 };
 
-// @desc    Download leave document
-// @route   GET /api/leaves/:id/document
-// @access  Private
+
 exports.downloadLeaveDocument = async (req, res, next) => {
   try {
     const leave = await Leave.findById(req.params.id);
@@ -226,7 +199,6 @@ exports.downloadLeaveDocument = async (req, res, next) => {
     
     const filePath = path.join(__dirname, '../uploads/documents', leave.document);
     
-    // Check if file exists
     if (!fs.existsSync(filePath)) {
       return next(new ErrorResponse('Document file not found', 404));
     }

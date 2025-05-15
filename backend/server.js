@@ -6,11 +6,11 @@ const cookieParser = require('cookie-parser');
 const fileUpload = require('express-fileupload');
 const morgan = require('morgan');
 
-// const authRoutes = require('./routes/auth.routes');
+const authRoutes = require('./src/routes/Auth');
 // const candidateRoutes = require('./routes/candidate.routes');
 // const employeeRoutes = require('./routes/employee.routes');
 // const attendanceRoutes = require('./routes/attendance.routes');
-// const leaveRoutes = require('./routes/leave.routes');
+const leaveRoutes = require('./src/routes/Leave');
 
 const { errorHandler } = require('./src/middleware/Error');
 const { connectDB } = require("./src/config/mongo");
@@ -35,11 +35,11 @@ app.use(fileUpload({
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// app.use('/api/auth', authRoutes);
+app.use('/api/auth', authRoutes);
 // app.use('/api/candidates', candidateRoutes);
 // app.use('/api/employees', employeeRoutes);
 // app.use('/api/attendance', attendanceRoutes);
-// app.use('/api/leaves', leaveRoutes);
+app.use('/api/leaves', leaveRoutes);
 
 app.get("/", (req, res) => {
   return res.send("Welcome to HR Dashboard");
