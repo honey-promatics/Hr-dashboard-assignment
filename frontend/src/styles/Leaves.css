@@ -2,6 +2,7 @@
 .leaves-page {
   padding: 20px;
   height: 100%;
+  overflow-y: hidden;
 }
 
 .leaves-header {
@@ -66,7 +67,7 @@
 .leaves-content {
   display: flex;
   gap: 20px;
-  height: calc(100vh - 160px);
+  height: 100vh;
 }
 
 .leaves-table-container {

@@ -1,5 +1,5 @@
 import { MoreVertical, Edit, Edit2, Trash2 } from "react-feather"
-import EditEmployeeModal from "../../component/modals/EditEmployeeModal"
+import EditEmployeeModal from "./EditEmployeeModal"
 import "../../styles/Employees.css"
 import { useState } from "react"
 

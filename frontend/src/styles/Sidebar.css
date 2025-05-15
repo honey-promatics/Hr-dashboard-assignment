@@ -1,5 +1,5 @@
 .sidebar {
-  width: 250px;
+  width: 20%;
   background-color: #ffffff;
   height: 100vh;
   position: sticky;
@@ -24,13 +24,17 @@
 }
 
 .search-container {
-  padding: 20px;
+  padding-top: 1rem;
+  position: relative;
+  border-radius: 5rem;
+  width: 80%;
 }
 
 .search-input {
   position: relative;
   display: flex;
   align-items: center;
+  border: none;
 }
 
 .search-icon {
