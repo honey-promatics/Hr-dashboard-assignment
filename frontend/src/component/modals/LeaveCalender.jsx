@@ -153,7 +153,7 @@ const LeaveCalendar = ({ leaves }) => {
   }
 
   return (
-    <div className="leave-calendar-section">
+    <div className="leave-calendar-section" style={{ height: "100vh" }}>
       <h3>Leave Calendar</h3>
 
       <Calendar
@@ -165,9 +165,12 @@ const LeaveCalendar = ({ leaves }) => {
             <div style={{ backgroundColor: "#dff0d8", borderRadius: 4 }}>🌴</div>
           ) : null
         }}
+      style={{
+        maxHeight:'400px'
+      }}
       />
 
-      <div className="approved-leaves mt-4">
+      <div className="approved-leaves mt-4" style={{ height: '100vh' }}>
         <h4>Approved Leaves</h4>
         <div className="approved-leaves-list">
           {leaves

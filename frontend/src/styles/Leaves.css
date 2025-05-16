@@ -67,7 +67,7 @@
 .leaves-content {
   display: flex;
   gap: 20px;
-  height: 100vh;
+  min-height: max-content;
 }
 
 .leaves-table-container {
