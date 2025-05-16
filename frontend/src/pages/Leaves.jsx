@@ -1,36 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Layout from '../component/layout/Layout';
 import AddLeaveModal from '../component/modals/AddLeaveModal';
 import AppliedLeavesTable from '../component/modals/AppliedLeavesTable';
 import LeaveCalendar from '../component/modals/LeaveCalender';
 import StatusFilter from '../component/modals/StatusFilter';
 import '../styles/Leaves.css';
+import { httpRequest } from '../utils/httpRequest';
+import 'rsuite/dist/rsuite.min.css';
 
 const Leaves = () => {
   const [isAddLeaveModalOpen, setIsAddLeaveModalOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState('all');
-  const [appliedLeaves, setAppliedLeaves] = useState([
-    {
-      id: 1,
-      name: 'Jane Cooper',
-      designation: 'Full Time Designer',
-      profilePic: '/assets/profile-jane.png',
-      date: '10/09/24',
-      reason: 'Visiting House',
-      status: 'Pending',
-      docs: true
-    },
-    {
-      id: 2,
-      name: 'Cody Fisher',
-      designation: 'Senior Backend Developer',
-      profilePic: '/assets/profile-cody.png',
-      date: '8/09/24',
-      reason: 'Visiting House',
-      status: 'Approved',
-      docs: true
-    }
-  ]);
+  const [ischange, setischange] = useState(false)
+  const [appliedLeaves, setAppliedLeaves] = useState([]);
 
   const handleAddLeave = (newLeave) => {
     setAppliedLeaves([...appliedLeaves, {
@@ -44,9 +26,36 @@ const Leaves = () => {
     setSelectedStatus(status);
   };
 
-  const filteredLeaves = selectedStatus === 'all' 
+  const filteredLeaves = selectedStatus === 'all'
     ? appliedLeaves
     : appliedLeaves.filter(leave => leave.status.toLowerCase() === selectedStatus.toLowerCase());
+
+
+
+  const fetchCandidate = async () => {
+    try {
+      const response = await httpRequest(
+        `api/leaves/getleave`,
+        "get",
+        {},
+        {},
+        true,
+        false
+      );
+      console.log("response : ", response)
+
+      if (response.success) {
+        setAppliedLeaves(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    fetchCandidate();
+  }, [ischange]);
+
 
   return (
     <Layout>
@@ -54,19 +63,19 @@ const Leaves = () => {
         <div className="leaves-header">
           <h1>Leaves</h1>
           <div className="leaves-actions">
-            <StatusFilter 
-              selectedStatus={selectedStatus} 
-              onStatusChange={handleStatusChange} 
+            <StatusFilter
+              selectedStatus={selectedStatus}
+              onStatusChange={handleStatusChange}
             />
             <div className="search-container">
-              <input 
-                type="text" 
-                placeholder="Search" 
+              <input
+                type="text"
+                placeholder="Search"
                 className="search-input"
               />
               <i className="search-icon"></i>
             </div>
-            <button 
+            <button
               className="add-leave-btn"
               onClick={() => setIsAddLeaveModalOpen(true)}
             >
@@ -74,7 +83,7 @@ const Leaves = () => {
             </button>
           </div>
         </div>
-        
+
         <div className="leaves-content">
           <div className="leaves-table-container">
             <AppliedLeavesTable leaves={filteredLeaves} />
@@ -85,9 +94,9 @@ const Leaves = () => {
         </div>
 
         {isAddLeaveModalOpen && (
-          <AddLeaveModal 
+          <AddLeaveModal
             onClose={() => setIsAddLeaveModalOpen(false)}
-            onSubmit={handleAddLeave}
+            onSuccess={() => setischange(prev => !prev)}
           />
         )}
       </div>

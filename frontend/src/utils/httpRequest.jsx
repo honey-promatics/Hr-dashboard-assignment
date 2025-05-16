@@ -37,11 +37,15 @@ export const httpRequest = async (
     } catch (error) {
         if (error?.response?.data === "Unauthorized") {
             router?.push("/login");
-            toast?.error(error?.response?.data);
-            return false;
         }
-        console.log("error", error);
-        toast.error(error?.response?.data?.errors?.msg || "An error occurred");
+        const serverMessage =
+            error?.response?.data?.error ||
+            error?.response?.data?.message ||
+            error?.response?.data?.errors?.msg ||
+            error?.response?.data ||
+            "An unknown error occurred";
+
+        toast.error(serverMessage);
         return false;
     }
 };

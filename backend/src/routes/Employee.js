@@ -14,17 +14,15 @@ const { uploadProfileImage, uploadResume } = require("../middleware/Upload")
 
 const router = express.Router()
 
-router.use(protect)
-
-router.route("/employee").get(getEmployees).post(authorize("HR"), uploadProfileImage, uploadResume, createEmployee)
+router.route("/getEmployees").get(protect, getEmployees)
 
 router
   .route("/employee/:id")
   .get(getEmployee)
-  .put(authorize("HR"), uploadProfileImage, uploadResume, updateEmployee)
-  .delete(authorize("HR"), deleteEmployee)
+  .put(protect, authorize("HR"), uploadProfileImage, uploadResume, updateEmployee)
+  .delete(protect, authorize("HR"), deleteEmployee)
 
-router.post("/createEmployee", authorize("HR"), createEmployeeAccount)
-router.get("/downloadResume/:id", downloadResume)
+router.post("/createEmployee", protect, authorize("HR"), uploadProfileImage, uploadResume, createEmployee)
+router.get("/downloadResume/:id", protect, downloadResume)
 
 module.exports = router

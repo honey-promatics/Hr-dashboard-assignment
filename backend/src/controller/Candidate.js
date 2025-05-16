@@ -2,23 +2,39 @@ const Candidate = require("../schema/Candidate")
 const ErrorResponse = require("../utils/errorResponse")
 const path = require("path")
 const fs = require("fs")
+const { default: mongoose } = require("mongoose")
+
+
+const getUniqueId = async (myid) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const lastUser = await Candidate.findOne({ createdBy: new mongoose.Types.ObjectId(myid) }).sort({ createdAt: -1 });
+            if (lastUser && lastUser.unique_id) {
+                resolve((+lastUser.unique_id) + 1);
+            } else {
+                resolve(100000);
+            }
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
 
 exports.getCandidates = async (req, res, next) => {
     try {
+        const id = req.user.id
+        console.log("id : ", id)
         const { status, search } = req.query
-
-        const query = {}
-
+        const query = {
+            createdBy: new mongoose.Types.ObjectId(id)
+        }
         if (status) {
             query.status = status
         }
-
         if (search) {
             query.$or = [{ fullName: { $regex: search, $options: "i" } }, { email: { $regex: search, $options: "i" } }]
         }
-
         const candidates = await Candidate.find(query).sort({ createdAt: -1 })
-
         res.status(200).json({
             success: true,
             count: candidates.length,
@@ -55,6 +71,8 @@ exports.createCandidate = async (req, res, next) => {
         if (existingCandidate) {
             return next(new ErrorResponse("Candidate with this email already exists", 400))
         }
+        const id = await getUniqueId(req.user.id)
+        req.body.unique_id = id
         const candidate = await Candidate.create(req.body)
 
         res.status(201).json({
@@ -154,6 +172,7 @@ exports.updateCandidateStatus = async (req, res, next) => {
 exports.downloadResume = async (req, res, next) => {
     try {
         const candidate = await Candidate.findById(req.params.id)
+        console.log("candidate : ", candidate)
 
         if (!candidate) {
             return next(new ErrorResponse(`Candidate not found with id of ${req.params.id}`, 404))
@@ -163,7 +182,9 @@ exports.downloadResume = async (req, res, next) => {
             return next(new ErrorResponse("No resume found for this candidate", 404))
         }
 
-        const filePath = path.join(__dirname, "../uploads/resumes", candidate.resume)
+        const filePath = path.join("/uploads/resumes", candidate.resume)
+        // const filePath = path.resolve(`upload/resume`, candidate.resume)
+        console.log("filePath : ", filePath)
 
         if (!fs.existsSync(filePath)) {
             return next(new ErrorResponse("Resume file not found", 404))
@@ -174,3 +195,4 @@ exports.downloadResume = async (req, res, next) => {
         next(error)
     }
 }
+

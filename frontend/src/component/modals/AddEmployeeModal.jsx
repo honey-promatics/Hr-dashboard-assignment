@@ -1,9 +1,10 @@
-"use client"
 
 import React from "react"
 import { Formik, Form, Field, ErrorMessage } from "formik"
 import * as Yup from "yup"
 import { X, Upload } from "react-feather"
+import { httpRequest } from "../../utils/httpRequest"
+import { toast } from "react-toastify"
 
 const AddEmployeeSchema = Yup.object().shape({
   name: Yup.string().required("Name is required").min(3, "Name must be at least 3 characters"),
@@ -15,7 +16,7 @@ const AddEmployeeSchema = Yup.object().shape({
   // Profile image is optional
 })
 
-const AddEmployeeModal = ({ onClose, onSubmit }) => {
+const AddEmployeeModal = ({ onClose, onSuccess }) => {
   const initialValues = {
     name: "",
     email: "",
@@ -28,7 +29,6 @@ const AddEmployeeModal = ({ onClose, onSubmit }) => {
   // Departments list
   const departments = ["UI/UX", "Engineering", "Product", "Marketing", "Sales", "HR", "Finance", "Operations"]
 
-  // Handle profile image upload
   const handleImageUpload = (setFieldValue) => {
     const input = document.createElement("input")
     input.type = "file"
@@ -38,7 +38,6 @@ const AddEmployeeModal = ({ onClose, onSubmit }) => {
         const file = e.target.files[0]
         setFieldValue("profileImage", file)
 
-        // Create preview
         const reader = new FileReader()
         reader.onload = (event) => {
           setFieldValue("profilePreview", event.target.result)
@@ -50,6 +49,41 @@ const AddEmployeeModal = ({ onClose, onSubmit }) => {
   }
 
   const [showDatePicker, setShowDatePicker] = React.useState(false)
+
+
+  const handleAddEmployee = async (values) => {
+    try {
+      console.log("values : ", values);
+      const data = new FormData();
+      data.append('fullName', values.name);
+      data.append('email', values.email);
+      data.append('phone', values.phone);
+      data.append('position', values.position);
+      data.append('department', values.department);
+      data.append('joinDate', values.joinDate);
+      data.append('profileImage', values.profileImage)
+      console.log("data : ", data)
+
+      const response = await httpRequest(
+        `api/employees/createEmployee`,
+        "post",
+        data,
+        {},
+        true,
+        true
+      );
+      console.log("response : ", response)
+
+      if (response.success) {
+        toast.success("Employee added successfully")
+      }
+      onSuccess()
+      onClose()
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
 
   return (
     <div className="modal-overlay">
@@ -64,23 +98,7 @@ const AddEmployeeModal = ({ onClose, onSubmit }) => {
         <Formik
           initialValues={initialValues}
           validationSchema={AddEmployeeSchema}
-          onSubmit={(values) => {
-            // Format the employee data
-            const formattedEmployee = {
-              name: values.name,
-              email: values.email,
-              position: values.position,
-              department: values.department,
-              joinDate: new Date(values.joinDate).toLocaleDateString("en-US", {
-                month: "2-digit",
-                day: "2-digit",
-                year: "2-digit",
-              }),
-              profilePic: values.profilePreview || "/assets/profile-default.png",
-            }
-
-            onSubmit(formattedEmployee)
-          }}
+          onSubmit={handleAddEmployee}
         >
           {({ setFieldValue, values, errors, touched, isValid, dirty }) => (
             <Form className="employee-form">

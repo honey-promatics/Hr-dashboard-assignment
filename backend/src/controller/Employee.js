@@ -4,13 +4,15 @@ const User = require("../schema/User")
 const ErrorResponse = require("../utils/errorResponse")
 const path = require("path")
 const fs = require("fs")
+const { default: mongoose } = require("mongoose")
 
 exports.getEmployees = async (req, res, next) => {
   try {
+    const id = req.user.id
     const { status, department, search } = req.query
-
-    const query = {}
-
+    const query = {
+      createdBy: new mongoose.Types.ObjectId(id)
+    }
     if (status) {
       query.status = status
     }
@@ -25,7 +27,7 @@ exports.getEmployees = async (req, res, next) => {
 
     const employees = await Employee.find(query).sort({ createdAt: -1 })
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       count: employees.length,
       data: employees,
@@ -61,18 +63,11 @@ exports.createEmployee = async (req, res, next) => {
       return next(new ErrorResponse("Employee with this email already exists", 400))
     }
 
-    if (req.body.candidateId) {
-      const candidate = await Candidate.findById(req.body.candidateId)
-      if (!candidate) {
-        return next(new ErrorResponse("Candidate not found", 404))
-      }
-
-      await Candidate.findByIdAndUpdate(req.body.candidateId, { status: "Selected" })
-    }
-
     const employee = await Employee.create(req.body)
+    console.log("employee : ", employee)
 
-    res.status(201).json({
+    return res.status(201).json({
+      message: "Employee created successfully",
       success: true,
       data: employee,
     })
@@ -133,51 +128,15 @@ exports.deleteEmployee = async (req, res, next) => {
       }
     }
 
-    if (employee.user) {
-      await User.findByIdAndUpdate(employee.user, { status: "Inactive" })
-    }
+    // if (employee.user) {
+    //   await User.findByIdAndUpdate(employee.user, { status: "Inactive" })
+    // }
 
     await employee.deleteOne()
 
     res.status(200).json({
+      message : "employee deleted successfully",
       success: true,
-      data: {},
-    })
-  } catch (error) {
-    next(error)
-  }
-}
-
-exports.createEmployeeAccount = async (req, res, next) => {
-  try {
-    const employee = await Employee.findById(req.params.id)
-
-    if (!employee) {
-      return next(new ErrorResponse(`Employee not found with id of ${req.params.id}`, 404))
-    }
-
-    if (employee.user) {
-      return next(new ErrorResponse("Employee already has a user account", 400))
-    }
-
-    const existingUser = await User.findOne({ email: employee.email })
-    if (existingUser) {
-      return next(new ErrorResponse("User with this email already exists", 400))
-    }
-
-    const user = await User.create({
-      name: employee.fullName,
-      email: employee.email,
-      password: req.body.password || "password123", 
-      role: employee.role === "HR" ? "HR" : "Employee",
-      profileImage: employee.profileImage,
-    })
-
-    await Employee.findByIdAndUpdate(req.params.id, { user: user._id })
-
-    res.status(201).json({
-      success: true,
-      data: user,
     })
   } catch (error) {
     next(error)

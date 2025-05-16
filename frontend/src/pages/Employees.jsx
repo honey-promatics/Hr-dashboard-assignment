@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Layout from "../component/layout/Layout"
 import EmployeesTable from "../component/modals/EmployeesTable"
 import EmployeesList from "../component/modals/EmployeesList"
@@ -9,63 +9,96 @@ import EditEmployeeModal from "../component/modals/EditEmployeeModal"
 import PositionFilter from "../component/modals/PositionFilter"
 import { Plus } from "react-feather"
 import "../styles/Employees.css"
+import { httpRequest } from "../utils/httpRequest"
+import { toast } from "react-toastify"
 
 const Employees = () => {
+    const baseUrl = import.meta.env.VITE_Backend_Url
     const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false)
     const [editingEmployee, setEditingEmployee] = useState(null)
     const [selectedPosition, setSelectedPosition] = useState("all")
-    const [employees, setEmployees] = useState([
-        {
-            id: 1,
-            name: "Jane Cooper",
-            profilePic: "/assets/profile-jane.png",
-            email: "jane@example.com",
-            position: "Full Time Designer",
-            department: "UI/UX",
-            joinDate: "10/05/22",
-            status: "Active",
-        },
-        {
-            id: 2,
-            name: "Cody Fisher",
-            profilePic: "/assets/profile-cody.png",
-            email: "cody@example.com",
-            position: "Senior Backend Developer",
-            department: "Engineering",
-            joinDate: "03/12/23",
-            status: "Active",
-        },
-    ])
+    const [ischange, setischange] = useState(false)
 
-    const handleAddEmployee = (newEmployee) => {
-        setEmployees([
-            ...employees,
-            {
-                id: employees.length + 1,
-                ...newEmployee,
-                status: "Active",
-            },
-        ])
-        setIsAddEmployeeModalOpen(false)
-    }
+    const [employees, setEmployees] = useState([])
 
     const handleEditEmployee = (updatedEmployee) => {
         setEmployees(employees.map((employee) => (employee.id === updatedEmployee.id ? updatedEmployee : employee)))
         setEditingEmployee(null)
     }
 
-    const handleDeleteEmployee = (id) => {
-        setEmployees(employees.filter((employee) => employee.id !== id))
+    const handleDeleteEmployee = async (id) => {
+        try {
+            const response = await httpRequest(
+                `api/employees/employee/${id}`,
+                "delete",
+                {},
+                {},
+                true,
+                false
+            );
+            console.log("response : ", response)
+
+            setischange(prev => !prev)
+            if (response.success) {
+                toast.success('employee deleted successfully')
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     const handlePositionChange = (position) => {
         setSelectedPosition(position)
     }
 
-    // Filter employees based on selected position
     const filteredEmployees = employees.filter((employee) => {
         return selectedPosition === "all" || employee.position.toLowerCase().includes(selectedPosition.toLowerCase())
     })
+
+
+    const fetchCandidate = async () => {
+        try {
+            const response = await httpRequest(
+                `api/employees/getEmployees`,
+                "get",
+                {},
+                {},
+                true,
+                false
+            );
+            console.log("response : ", response)
+
+            if (response.success) {
+                setEmployees(response.data);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+
+    // useEffect(() => {
+    //     const controller = new AbortController();
+    //     const signal = controller.signal;
+
+    //     const fetchData = async () => {
+    //         try {
+    //             await fetchCandidate(signal);
+    //         } catch (error) {
+    //             if (error.name !== 'AbortError') {
+    //                 console.error('Fetch error:', error);
+    //             }
+    //         }
+    //     };
+
+    //     fetchData();
+
+    //     return () => controller.abort();
+    // }, [ischange]);
+
+    useEffect(() => {
+        fetchCandidate();
+    }, [ischange]);
 
     return (
         <Layout>
@@ -107,7 +140,7 @@ const Employees = () => {
                 </div>
 
                 <div className="employees-content">
-                    <EmployeesList employees={filteredEmployees} />
+                    <EmployeesList employees={filteredEmployees} deleteEmployee={handleDeleteEmployee} />
                 </div>
 
                 {/* <div className="employees-content">
@@ -119,7 +152,7 @@ const Employees = () => {
                 </div> */}
 
                 {isAddEmployeeModalOpen && (
-                    <AddEmployeeModal onClose={() => setIsAddEmployeeModalOpen(false)} onSubmit={handleAddEmployee} />
+                    <AddEmployeeModal onClose={() => setIsAddEmployeeModalOpen(false)} onSuccess={() => setischange(prev => !prev)} />
                 )}
                 {editingEmployee && (
                     <EditEmployeeModal

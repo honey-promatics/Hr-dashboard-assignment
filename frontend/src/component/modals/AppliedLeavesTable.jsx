@@ -1,6 +1,8 @@
 import { FileText, ChevronDown } from "react-feather"
 
 const AppliedLeavesTable = ({ leaves }) => {
+  const baseUrl = import.meta.env.VITE_Backend_Url
+
   return (
     <div className="applied-leaves-section">
       <h3>Applied Leaves</h3>
@@ -17,14 +19,14 @@ const AppliedLeavesTable = ({ leaves }) => {
         </thead>
         <tbody>
           {leaves.map((leave) => (
-            <tr key={leave.id}>
+            <tr key={leave._id}>
               <td className="profile-cell">
-                <img src={leave.profilePic || "/placeholder.svg"} alt={leave.name} className="profile-pic" />
+                <img src={`${baseUrl}public/profiles/${leave.employee.profilePic}` || "/placeholder.svg"} alt={leave.name} className="profile-pic" />
               </td>
               <td>
                 <div className="employee-info">
-                  <p className="employee-name">{leave.name}</p>
-                  <p className="employee-designation">{leave.designation}</p>
+                  <p className="employee-name">{leave.employee.fullName}</p>
+                  <p className="employee-designation">{leave.employee.position}</p>
                 </div>
               </td>
               <td>{leave.date}</td>

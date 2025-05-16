@@ -2,8 +2,10 @@ import { MoreVertical, Edit, Edit2, Trash2 } from "react-feather"
 import EditEmployeeModal from "./EditEmployeeModal"
 import "../../styles/Employees.css"
 import { useState } from "react"
+import moment from 'moment'
 
-const EmployeesList = ({ employees }) => {
+const EmployeesList = ({ employees, deleteEmployee }) => {
+  const baseUrl = import.meta.env.VITE_Backend_Url
   const [isEditEmployeeModalOpen, setIsEditEmployeeModalOpen] = useState(false)
   const [editingEmployee, setEditingEmployee] = useState(null)
   const [selectedPosition, setSelectedPosition] = useState("all")
@@ -14,7 +16,6 @@ const EmployeesList = ({ employees }) => {
     setActiveMenu(activeMenu === id ? null : id)
   }
 
-  // Close menus when clicking outside
   const handleClickOutside = () => {
     setActiveMenu(null)
   }
@@ -22,10 +23,6 @@ const EmployeesList = ({ employees }) => {
   // const handleEditEmployee = (updatedEmployee) => {
   //   setEmployees(employees.map((employee) => (employee.id === updatedEmployee.id ? updatedEmployee : employee)))
   //   setEditingEmployee(null)
-  // }
-
-  // const handleDeleteEmployee = (id) => {
-  //   setEmployees(employees.filter((employee) => employee.id !== id))
   // }
 
   // const handlePositionChange = (position) => {
@@ -50,15 +47,15 @@ const EmployeesList = ({ employees }) => {
         </thead>
         <tbody>
           {employees.map((employee) => (
-            <tr key={employee.id}>
+            <tr key={employee._id}>
               <td className="profile-cell">
-                <img src={employee.profilePic || "/placeholder.svg"} alt={employee.name} className="profile-pic" />
+                <img src={`${baseUrl}public/profiles/${employee.profileImage}` || "/placeholder.svg"} alt={employee.fullName} className="profile-pic" />
               </td>
-              <td>{employee.name}</td>
+              <td>{employee.fullName}</td>
               <td>{employee.email}</td>
               <td>{employee.position}</td>
               <td>{employee.department}</td>
-              <td>{employee.joinDate}</td>
+              <td>{moment(employee.joinDate).format('lll')}</td>
               <td>
                 <div className={`status-badge ${employee.status.toLowerCase()}`}>{employee.status}</div>
               </td>
@@ -67,7 +64,7 @@ const EmployeesList = ({ employees }) => {
                   <button className="action-btn edit" onClick={() => isEditEmployeeModalOpen(true)}>
                     <Edit2 size={16} />
                   </button>
-                  <button className="action-btn delete">
+                  <button className="action-btn delete" onClick={()=> deleteEmployee(employee._id)}>
                     <Trash2 size={16} />
                   </button>
                 </div>

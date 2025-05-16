@@ -11,6 +11,7 @@ const candidateRoutes = require('./src/routes/Candidate');
 const employeeRoutes = require('./src/routes/Employee');
 const attendanceRoutes = require('./src/routes/Attendence');
 const leaveRoutes = require('./src/routes/Leave');
+const { uploadMedia } = require("./src/middleware/Upload")
 
 const { errorHandler } = require('./src/middleware/Error');
 const { connectDB } = require("./src/config/mongo");
@@ -45,13 +46,14 @@ app.use(fileUpload({
     limits: { fileSize: 10 * 1024 * 1024 }
 }));
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/candidates', candidateRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/leaves', leaveRoutes);
+app.post('/api/upload', uploadMedia)
 
 app.get("/", (req, res) => {
     return res.send("Welcome to HR Dashboard");

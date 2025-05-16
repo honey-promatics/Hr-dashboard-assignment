@@ -28,11 +28,6 @@ const EmployeeSchema = new mongoose.Schema({
     type: Date,
     required: [true, "Please add a join date"],
   },
-  role: {
-    type: String,
-    enum: ["Employee", "Team Lead", "Manager", "HR"],
-    default: "Employee",
-  },
   profileImage: {
     type: String,
     default: "default-profile.jpg",
@@ -58,7 +53,6 @@ const EmployeeSchema = new mongoose.Schema({
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true,
   },
   createdAt: {
     type: Date,

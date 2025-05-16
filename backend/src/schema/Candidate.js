@@ -6,6 +6,7 @@ const CandidateSchema = new mongoose.Schema({
     required: [true, 'Please add a full name'],
     trim: true
   },
+  unique_id: Number,
   email: {
     type: String,
     required: [true, 'Please add an email'],

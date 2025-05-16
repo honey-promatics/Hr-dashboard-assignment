@@ -26,7 +26,7 @@ const UserSchema = new mongoose.Schema({
   role: {
     type: String,
     enum: ['HR', 'Employee'],
-    default: 'Employee'
+    default: 'HR'
   },
   profileImage: {
     type: String,
