@@ -15,6 +15,7 @@ import { toast } from "react-toastify"
 const Employees = () => {
     const baseUrl = import.meta.env.VITE_Backend_Url
     const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false)
+
     const [editingEmployee, setEditingEmployee] = useState(null)
     const [selectedPosition, setSelectedPosition] = useState("all")
     const [ischange, setischange] = useState(false)
@@ -140,7 +141,7 @@ const Employees = () => {
                 </div>
 
                 <div className="employees-content">
-                    <EmployeesList employees={filteredEmployees} deleteEmployee={handleDeleteEmployee} />
+                    <EmployeesList employees={filteredEmployees} deleteEmployee={handleDeleteEmployee} onSuccess={() => setischange(prev => !prev)} />
                 </div>
 
                 {/* <div className="employees-content">

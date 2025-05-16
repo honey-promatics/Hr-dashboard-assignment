@@ -21,7 +21,7 @@ const AppliedLeavesTable = ({ leaves }) => {
           {leaves.map((leave) => (
             <tr key={leave._id}>
               <td className="profile-cell">
-                <img src={`${baseUrl}public/profiles/${leave.employee.profilePic}` || "/placeholder.svg"} alt={leave.name} className="profile-pic" />
+                <img src={`${baseUrl}public/profiles/${leave.employee.profileImage}` || "/placeholder.svg"} alt={leave.name} className="profile-pic" />
               </td>
               <td>
                 <div className="employee-info">
@@ -38,7 +38,7 @@ const AppliedLeavesTable = ({ leaves }) => {
                 </div>
               </td>
               <td>
-                {leave.docs && (
+                {leave.document && (
                   <button className="docs-btn">
                     <FileText size={16} />
                   </button>

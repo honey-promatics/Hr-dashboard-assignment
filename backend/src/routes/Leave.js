@@ -17,8 +17,7 @@ const router = express.Router();
 router.use(protect);
 
 router.route('/getleave').get(getLeaves)
-router.route('/createLeave').post(createLeave);
-router.route('/uploadLeaveDocument').post(uploadLeaveDocument)
+router.route('/createLeave').post(uploadLeaveDocument,createLeave);
 router.get('/getApprovedLeave', getApprovedLeaves);
 
 router.route('/leave/:id')

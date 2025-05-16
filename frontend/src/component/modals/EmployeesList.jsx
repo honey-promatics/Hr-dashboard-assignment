@@ -4,12 +4,13 @@ import "../../styles/Employees.css"
 import { useState } from "react"
 import moment from 'moment'
 
-const EmployeesList = ({ employees, deleteEmployee }) => {
+const EmployeesList = ({ employees, deleteEmployee, onSuccess }) => {
   const baseUrl = import.meta.env.VITE_Backend_Url
   const [isEditEmployeeModalOpen, setIsEditEmployeeModalOpen] = useState(false)
   const [editingEmployee, setEditingEmployee] = useState(null)
   const [selectedPosition, setSelectedPosition] = useState("all")
   const [activeMenu, setActiveMenu] = useState(null)
+  const [id, setId] = useState('')
 
   const toggleMenu = (id, e) => {
     e.stopPropagation() // Prevent triggering parent click events
@@ -61,10 +62,13 @@ const EmployeesList = ({ employees, deleteEmployee }) => {
               </td>
               <td>
                 <div className="actions-cell">
-                  <button className="action-btn edit" onClick={() => isEditEmployeeModalOpen(true)}>
+                  <button className="action-btn edit" onClick={() => {
+                    setId(employee._id)
+                    setIsEditEmployeeModalOpen(true)
+                  }}>
                     <Edit2 size={16} />
                   </button>
-                  <button className="action-btn delete" onClick={()=> deleteEmployee(employee._id)}>
+                  <button className="action-btn delete" onClick={() => deleteEmployee(employee._id)}>
                     <Trash2 size={16} />
                   </button>
                 </div>
@@ -99,7 +103,7 @@ const EmployeesList = ({ employees, deleteEmployee }) => {
                 )}
               </div> */}
               {isEditEmployeeModalOpen && (
-                <EditEmployeeModal onClose={() => setIsEditEmployeeModalOpen(false)} />
+                <EditEmployeeModal onClose={() => setIsEditEmployeeModalOpen(false)} onSuccess={onSuccess} id={id} />
               )}
             </tr>
           ))}
