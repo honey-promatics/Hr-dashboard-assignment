@@ -32,7 +32,8 @@ app.use(cookieParser());
 //     credentials: true,
 // }));
 app.use(cors({
-    origin: "https://hr-dashboard-88164.web.app/",
+    // origin: "https://hr-dashboard-88164.web.app/",
+    origin: "*",
     credentials: true,
 }));
 app.use(express.json());
