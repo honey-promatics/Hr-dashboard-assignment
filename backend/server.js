@@ -32,7 +32,7 @@ app.use(cookieParser());
 //     credentials: true,
 // }));
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: "https://hr-dashboard-88164.web.app/",
     credentials: true,
 }));
 app.use(express.json());
