@@ -3,6 +3,7 @@ import axios from 'axios'
 import { httpRequest } from "../utils/httpRequest"
 import { toast } from "react-toastify"
 import { useNavigate } from "react-router-dom"
+import Cookies from "js-cookie"
 
 const AuthContext = createContext()
 
@@ -62,6 +63,7 @@ export const AuthProvider = ({ children }) => {
             const newUser = response.data
 
             const token = response.token
+            Cookies.set('token', token)
 
             localStorage.setItem("user", JSON.stringify(newUser))
             localStorage.setItem("token", token)
@@ -106,6 +108,7 @@ export const AuthProvider = ({ children }) => {
             const loggedInUser = response.data
 
             const token = response.token
+            Cookies.set('token', token)
 
             localStorage.setItem("user", JSON.stringify(loggedInUser))
             localStorage.setItem("token", token)
@@ -128,6 +131,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem("user")
         localStorage.removeItem("token")
         localStorage.removeItem("expireBy")
+        Cookies.remove('token')
 
         setUser(null)
         setIsAuthenticated(false)
