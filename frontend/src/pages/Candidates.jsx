@@ -2,14 +2,18 @@ import { useEffect, useState } from 'react';
 import Layout from '../component/layout/Layout';
 import '../styles/Candidates.css';
 import AddCandidateModal from '../component/modals/AddCandidateModal';
+import EditCandidateModal from '../component/modals/EditCandidateModal';
 import { httpRequest } from '../utils/httpRequest';
+import { toast } from 'react-toastify';
 
 const Candidates = () => {
   const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setshowEditModal] = useState(false);
   const [statusFilter, setStatusFilter] = useState('');
   const [positionFilter, setPositionFilter] = useState('');
   const [candidates, setCandidates] = useState([]);
   const [ischange, setischange] = useState(false)
+  const [id, setId] = useState('')
 
   const [actionMenuOpen, setActionMenuOpen] = useState(null);
 
@@ -194,8 +198,11 @@ const Candidates = () => {
                     </button>
                     {actionMenuOpen === candidate._id && (
                       <div className="action-menu">
-                        <div className="action-item" onClick={() => handleDownloadResume(candidate._id)}>
-                          Download Resume
+                        <div className="action-item" onClick={() => {
+                          setshowEditModal(true)
+                          setId(candidate._id)
+                        }}>
+                          Edit Candidate
                         </div>
                         <div className="action-item delete" onClick={() => handleDeleteCandidate(candidate._id)}>
                           Delete Candidate
@@ -216,6 +223,16 @@ const Candidates = () => {
           onSuccess={() => setischange(prev => !prev)}
         />
       )}
+
+      {
+        showEditModal && (
+          <EditCandidateModal
+            onClose={() => setshowEditModal(false)}
+            onSuccess={() => setischange(prev => !prev)}
+            candidateId={id}
+          />
+        )
+      }
     </Layout>
   );
 };

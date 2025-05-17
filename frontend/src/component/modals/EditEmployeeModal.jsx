@@ -367,7 +367,7 @@ const EditEmployeeModal = ({ onClose, onSuccess, id }) => {
       data.append('position', values.position);
       data.append('department', values.department);
       data.append('joinDate', values.joinDate);
-      
+
       if (values.profileImage) {
         if (typeof values.profileImage === 'string') {
           // If it's a string (existing image URL), don't append to FormData
@@ -401,8 +401,8 @@ const EditEmployeeModal = ({ onClose, onSuccess, id }) => {
   }, [id]);
 
   return (
-    <div className="modal-overlay">
-      <div className="add-employee-modal">
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="add-employee-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Manage Employee</h2>
           <button className="close-btn" onClick={onClose}>
@@ -422,13 +422,13 @@ const EditEmployeeModal = ({ onClose, onSuccess, id }) => {
                 <div className="form-group profile-upload">
                   <div className="profile-preview" onClick={() => handleImageUpload(setFieldValue)}>
                     {values.profilePreview ? (
-                      <img 
+                      <img
                         src={
                           typeof values.profilePreview === 'string' && values.profilePreview.startsWith('blob:')
                             ? values.profilePreview
                             : `${baseUrl}public/profiles/${values.profilePreview}`
-                        } 
-                        alt="Profile preview" 
+                        }
+                        alt="Profile preview"
                       />
                     ) : (
                       <div className="upload-placeholder">
@@ -559,8 +559,8 @@ const EditEmployeeModal = ({ onClose, onSuccess, id }) => {
                 <button type="button" className="cancel-btn" onClick={onClose}>
                   Cancel
                 </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="save-btn"
                   disabled={!isValid || !dirty}
                 >
