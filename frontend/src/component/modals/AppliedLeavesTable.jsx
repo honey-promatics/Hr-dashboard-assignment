@@ -33,8 +33,11 @@ const AppliedLeavesTable = ({ leaves }) => {
               <td>{leave.reason}</td>
               <td>
                 <div className={`status-badge ${leave.status.toLowerCase()}`}>
-                  {leave.status}
-                  <ChevronDown size={16} />
+                  <select name="status" value={leave.status}>
+                    <option value="Pending">Pending</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Rejected">Rejected</option>
+                  </select>
                 </div>
               </td>
               <td>
